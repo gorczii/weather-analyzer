@@ -4,7 +4,7 @@ import com.weather.scala.common.City
 
 case class UvStatistics(city: City,
                         month: Int,
-                        year: Int,
+                        year: Option[Int],
                         value: Double) {
 
   override def toString = {

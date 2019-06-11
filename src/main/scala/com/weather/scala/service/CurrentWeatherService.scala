@@ -11,23 +11,23 @@ object CurrentWeatherService {
 
   def fetchWeather(cityName: String, countryCode: String = ""): CurrentWeatherResponse = {
     val q = if (countryCode.equals("")) cityName else s"$cityName,$countryCode"
-    val url = ApiConstants.getURL(s"$resourcePath/?q=$q")
+    val url = ApiConstants.getURL(s"$resourcePath/?q=$q&units=metric")
     callApi(url)
   }
 
   def fetchWeather(lon: Double, lat: Double): CurrentWeatherResponse = {
     val coordQuery = s"lat=$lat&lon=$lon"
-    val url = ApiConstants.getURL(s"$resourcePath/?$coordQuery")
+    val url = ApiConstants.getURL(s"$resourcePath/?$coordQuery&units=metric")
     callApi(url)
   }
 
   def fetchWeather(id: Int): CurrentWeatherResponse = {
-    val url = ApiConstants.getURL(s"$resourcePath/?id=$id")
+    val url = ApiConstants.getURL(s"$resourcePath/?id=$id&units=metric")
     callApi(url)
   }
 
   def fetchWeather(zip: Int, countryCode: String): CurrentWeatherResponse = {
-    val url = ApiConstants.getURL(s"$resourcePath/?zip=$zip,$countryCode")
+    val url = ApiConstants.getURL(s"$resourcePath/?zip=$zip,$countryCode&units=metric")
     callApi(url)
   }
 
