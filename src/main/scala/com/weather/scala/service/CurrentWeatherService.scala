@@ -6,7 +6,7 @@ import com.weather.scala.protocol.JsonProtocols._
 import scalaj.http.Http
 import spray.json._
 
-object CurrentWeatherService {
+class CurrentWeatherService {
   private val resourcePath = "/weather"
 
   def fetchWeather(cityName: String, countryCode: String = ""): CurrentWeatherResponse = {
