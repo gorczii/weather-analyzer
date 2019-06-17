@@ -8,14 +8,14 @@ import com.weather.scala.service.UVService
 
 import scala.collection.mutable.ListBuffer
 
-object UvAnalyzer {
+case class UvAnalyzer(uvService: UVService) {
 
   val start: LocalDateTime = LocalDateTime.of(2017, 7, 1, 0, 0)
-  val end: LocalDateTime = LocalDateTime.of(2019, 5, 31, 0, 0)
+  val end: LocalDateTime = LocalDateTime.of(2017, 8, 31, 0, 0)
   val cal: Calendar = Calendar.getInstance
 
   def generateUVStatistics(city: City): List[UvStatistics] = {
-    val uvHistory = UVService.fetchHistoricalUV(city.coordinate.lat, city.coordinate.lon,
+    val uvHistory = uvService.fetchHistoricalUV(city.coordinate.lat, city.coordinate.lon,
       convertToMillis(start), convertToMillis(end))
 
     uvHistory.map(uvHis => UvStatistics(city, extractMonth(uvHis.date), Some(extractYear(uvHis.date)), uvHis.value))
@@ -28,8 +28,8 @@ object UvAnalyzer {
 
     for (month <- 0 to 11) {
       val monthlyStatistics = statistics
-        .filter(s => s.month.equals(month))
-        .map(s => s.value)
+        .filter(_.month.equals(month))
+        .map(_.value)
       val avg = monthlyStatistics.sum / monthlyStatistics.length
       result += UvStatistics(city, month, None, avg)
     }

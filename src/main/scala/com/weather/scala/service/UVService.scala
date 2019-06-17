@@ -7,7 +7,7 @@ import scalaj.http.Http
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
-object UVService {
+class UVService {
   val RESOURCE_PATH = "/uvi"
   val UV_FORECAST_PATH = "/forecast"
   val UV_HISTORY_PATH = "/history"
