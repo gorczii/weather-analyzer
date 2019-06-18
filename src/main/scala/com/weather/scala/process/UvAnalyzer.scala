@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 case class UvAnalyzer(uvService: UVService) {
 
   val start: LocalDateTime = LocalDateTime.of(2017, 7, 1, 0, 0)
-  val end: LocalDateTime = LocalDateTime.of(2017, 8, 31, 0, 0)
+  val end: LocalDateTime = LocalDateTime.of(2019, 5, 31, 0, 0)
   val cal: Calendar = Calendar.getInstance
 
   def generateUVStatistics(city: City): List[UvStatistics] = {

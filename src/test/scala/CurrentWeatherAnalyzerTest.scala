@@ -1,4 +1,4 @@
-import com.weather.scala.common.{City, Coord, ProcessingConstants}
+import com.weather.scala.common._
 import com.weather.scala.model.CurrentWeatherResponse
 import com.weather.scala.model.current._
 import com.weather.scala.process.{WeatherAnalysisResult, WeatherAnalyzer}
@@ -8,7 +8,7 @@ import org.scalatest.FunSuite
 
 class CurrentWeatherAnalyzerTest extends FunSuite {
 
-  test("UvAnalyzer.findMediumMonthlyUV") {
+  test("WeatherAnalyzer.findMediumMonthlyUV") {
 
     val mockCurrentWeatherService: CurrentWeatherService = Mockito.mock(classOf[CurrentWeatherService])
     Mockito.when(mockCurrentWeatherService.fetchWeather(ProcessingConstants.ZAMOSC.id.get))
@@ -32,6 +32,40 @@ class CurrentWeatherAnalyzerTest extends FunSuite {
 
     assert(expected === actual)
   }
+
+  test("WeatherAnalyzer.findPeakStatistic") {
+    val expectedZamoscAnalysis: WeatherAnalysisResult = WeatherAnalysisResult(ProcessingConstants.ZAMOSC,
+      MainWeatherValues(19.0, 1025, 77, 19.0, 19.0), Wind(Some(1.5), Some(360)))
+    val expectedWroclawAnalysis: WeatherAnalysisResult = WeatherAnalysisResult(ProcessingConstants.WROCLAW,
+      MainWeatherValues(16.82, 1020, 56, 13.33, 20.56), Wind(Some(2.1), Some(50)))
+    val expectedGdyniaAnalysis: WeatherAnalysisResult = WeatherAnalysisResult(ProcessingConstants.GDYNIA,
+      MainWeatherValues(15.75, 1021, 82, 15.0, 16.67), Wind(Some(1.0), None))
+
+    val weatherAnalysisResults: Array[WeatherAnalysisResult] = Array(expectedZamoscAnalysis, expectedWroclawAnalysis, expectedGdyniaAnalysis)
+    weatherAnalysisResults.foreach(println)
+
+    val mockCurrentWeatherService: CurrentWeatherService = Mockito.mock(classOf[CurrentWeatherService])
+    val weatherAnalyzer: WeatherAnalyzer = WeatherAnalyzer(mockCurrentWeatherService)
+
+    val minWind = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Min, WeatherParamEnum.Wind)
+    val maxWind = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Max, WeatherParamEnum.Wind)
+    val minPressure = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Min, WeatherParamEnum.Pressure)
+    val maxPressure = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Max, WeatherParamEnum.Pressure)
+    val minTemp = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Min, WeatherParamEnum.Temperature)
+    val maxTemp = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Max, WeatherParamEnum.Temperature)
+    val minHumidity = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Min, WeatherParamEnum.Humidity)
+    val maxHumidity = weatherAnalyzer.findPeakStatistic(weatherAnalysisResults, MinMax.Max, WeatherParamEnum.Humidity)
+
+    assert(minWind === expectedGdyniaAnalysis)
+    assert(maxWind === expectedWroclawAnalysis)
+    assert(minPressure === expectedWroclawAnalysis)
+    assert(maxPressure === expectedZamoscAnalysis)
+    assert(minTemp === expectedGdyniaAnalysis)
+    assert(maxTemp === expectedZamoscAnalysis)
+    assert(minHumidity === expectedWroclawAnalysis)
+    assert(maxHumidity === expectedGdyniaAnalysis)
+  }
+
 
   val zamoscWeather: CurrentWeatherResponse = CurrentWeatherResponse(
     Coord(23.25, 50.72), List(Weather(800, "Clear", "clear sky", "01n")), "stations",
